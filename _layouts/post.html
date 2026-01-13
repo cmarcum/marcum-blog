@@ -1,0 +1,17 @@
+---
+layout: default
+---
+<article>
+  <h1>{{ page.title }}</h1>
+  <p><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %d, %Y" }}</time></p>
+  <hr>
+  {{ content }}
+  <p class="post-tags">
+  Tags: 
+  {% for tag in page.tags %}
+    <span class="tag" style="background: #f0f0f0; padding: 2px 8px; border-radius: 4px; margin-right: 5px; font-size: 0.8em;">
+      {{ tag }}
+    </span>
+  {% endfor %}
+  </p>
+</article>
