@@ -2,7 +2,7 @@ title: "Open Evidence"
 author: "Christopher Steven Marcum, Ph.D., F.G.S.A."
 description: "Perspectives on science, data, and technology that don't fit anywhere else."
 url: "https://cmarcum.github.io/marcum-blog/" 
-baseurl: "https://cmarcum.github.io/"
+baseurl: ""
 
 plugins:
   - jekyll-feed
