@@ -6,6 +6,21 @@ layout: default
   <p><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %d, %Y" }}</time></p>
   <hr>
   {{ content }}
+  {% if page.updates %}
+    <div class="post-updates" style="background: #fdfdfd; border-left: 4px solid #0066cc; padding: 15px; margin: 20px 0; font-size: 0.9em;">
+      <strong style="text-transform: uppercase; letter-spacing: 0.05em; color: #0066cc;">Updates:</strong>
+      <ul style="list-style: none; padding-left: 0; margin-top: 10px;">
+        {% for update in page.updates %}
+        <li style="margin-bottom: 8px;">
+          <code style="font-weight: bold; background: #eee; padding: 2px 5px; border-radius: 3px;">
+            {{ update.date | date: "%B %d, %Y" }}
+          </code> 
+          — {{ update.content }}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
   <p class="post-tags">
   Tags: 
   {% for tag in page.tags %}
