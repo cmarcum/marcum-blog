@@ -2,6 +2,10 @@
 layout: post
 title: "Well, it's about time I started a new blog."
 date: 2026-01-13
+last_modified_at: 2026-01-18
+updates:
+  - date: 2026-01-18
+    content: "Updated the feed to use atom instead of rss at the suggestion of Martin Fenner and implemented updates."
 tags: [general]
 ---
 
