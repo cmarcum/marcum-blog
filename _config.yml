@@ -3,6 +3,11 @@ author: "Christopher Steven Marcum, Ph.D., F.G.S.A."
 description: "Perspectives on science, data, and technology that don't fit anywhere else."
 url: "http://www.chrismacum.com" 
 baseurl: "/marcum-blog"
+license:
+  name: Creative Commons Attribution 4.0 International (CC BY 4.0)
+  url: https://creativecommons.org/licenses/by/4.0/
+  text: "This work is licensed under a"
+  badge: https://licensebuttons.net/l/by/4.0/80x15.png
 
 plugins:
   - jekyll-feed
