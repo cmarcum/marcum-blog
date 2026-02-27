@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Comments submitted to CDC on their Data Management (DMP) template proposal."
+title: "Comments submitted to CDC on their Data Management Plan (DMP) template proposal."
 date: 2026-02-27
 tags: [general]
 ---
