@@ -2,6 +2,9 @@
 layout: post
 title: "Automating information retrieval from reginfo.gov using python scripts."
 date: 2026-02-27
+updates:
+  - date: 2026-01-28
+    content: "Fixed a link and a box overflow."
 tags: [federal-data,code]
 ---
 
@@ -9,8 +12,7 @@ Evaluating the integrity of federal data requires a comprehensive look at how ag
 
 The website lacks a public API and, as a result, large-scale data extraction is difficult and often involves iterative manual collection. One of the most restrictive limitations is a hard cap that prevents users from viewing more than 1,000 results for any single ICR search using the [PRASearch](https://www.reginfo.gov/public/do/PRASearch) tool. This limit makes it impossible to pull complete government-wide inventories without considerable manual work. Additionally, many documents are not directly linkable. They are instead hidden behind JavaScript triggers or nested within several layers of subpages, requiring significant time to locate and download individually.
 
-To facilitate greater access to data on ICRs held by reginfo.gov, I wrote (sometimes with the help of Google Gemini) a couple of helper functions using python to overcome these limitations. The scripts and a very handy codebook are available open-source through my github here: [pra-icr-tools]
-(https://github.com/cmarcum/pra-icr-tools).
+To facilitate greater access to data on ICRs held by reginfo.gov, I wrote (sometimes with the help of Google Gemini) a couple of helper functions using python to overcome these limitations. The scripts and a very handy codebook are available open-source through my github here: [pra-icr-tools](https://github.com/cmarcum/pra-icr-tools).
 
 Feel free to contribute to the repo. While there are only two scripts available right now, I plan to add more in the future and will happily consider pull-requests that add functionality and fix any bugs. 
 
