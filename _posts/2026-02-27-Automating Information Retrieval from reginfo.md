@@ -9,8 +9,8 @@ Evaluating the integrity of federal data requires a comprehensive look at how ag
 
 The website lacks a public API and, as a result, large-scale data extraction is difficult and often involves iterative manual collection. One of the most restrictive limitations is a hard cap that prevents users from viewing more than 1,000 results for any single ICR search using the [PRASearch](https://www.reginfo.gov/public/do/PRASearch) tool. This limit makes it impossible to pull complete government-wide inventories without considerable manual work. Additionally, many documents are not directly linkable. They are instead hidden behind JavaScript triggers or nested within several layers of subpages, requiring significant time to locate and download individually.
 
-To facilitate greater access to data on ICRs held by reginfo.gov, I wrote (sometimes with the help of Google Gemini) a couple of helper functions using python to overcome these limitations. The scripts and a very handy codebook are available open-source through my github here:
-[https://github.com/cmarcum/pra-icr-tools](pra-irc-tools).
+To facilitate greater access to data on ICRs held by reginfo.gov, I wrote (sometimes with the help of Google Gemini) a couple of helper functions using python to overcome these limitations. The scripts and a very handy codebook are available open-source through my github here: [pra-icr-tools]
+(https://github.com/cmarcum/pra-icr-tools).
 
 Feel free to contribute to the repo. While there are only two scripts available right now, I plan to add more in the future and will happily consider pull-requests that add functionality and fix any bugs. 
 
@@ -20,8 +20,10 @@ The first tool in the repository, pra-icr-search.py, is a command-line script th
 Because the script handles pagination using headless javascript commands, we can collect metadata on very large ICR queries, such as this search for all concluded ICRS from the Environmental Protection Agency between 1/1/2021 and 12/31/2024:
 
 ```bash
-> python pra-icr-search.py agencyCode=2000 dateType=CO startDate=01/01/2021 endDate=12/31/2024 --output epa_4_year_history.csv --delay 2
-[*] Attempting primary search: {'agencyCode': '2000', 'dateType': 'CO', 'startDate': '01/01/2021', 'endDate': '12/31/2024'}
+> python pra-icr-search.py agencyCode=2000 dateType=CO startDate=01/01/2021
+endDate=12/31/2024 --output epa_4_year_history.csv --delay 2
+[*] Attempting primary search: {'agencyCode': '2000', 'dateType':
+ 'CO', 'startDate': '01/01/2021', 'endDate': '12/31/2024'}
   [*] Total Records Found: 602
   [*] Scraped page 1. Rows collected: 10 (Total: 10)
   [*] Scraped page 2. Rows collected: 10 (Total: 20)
