@@ -30,49 +30,47 @@ layout: default
   {% endfor %}
   </p>
   <hr>
-<hr>
-<hr>
-
-<div id="rogue-scholar-citation" style="font-size: 0.9em; color: #555; margin-top: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9; line-height: 1.5;">
-  Checking Rogue Scholar for DOI...
-</div>
-
-<script>
-(function() {
-  const pageTitle = {{ page.title | jsonify }};
-  const blogSlug = "chrismarcum"; 
-  const placeholder = document.getElementById('rogue-scholar-citation');
-  const query = `parent.communities.ids:${blogSlug} AND metadata.title:"${pageTitle.replace(/"/g, '\\"')}"`;
-  const apiUrl = `https://rogue-scholar.org/api/records?q=${encodeURIComponent(query)}&size=1`;
-
-  fetch(apiUrl)
-    .then(response => {
-      if (!response.ok) throw new Error('API fetch failed');
-      return response.json();
-    })
-    .then(data => {
+  <hr>
+  <div id="doi-status" style="font-size: 0.9em; color: #555; margin-top: 20px; padding: 15px; border-radius: 5px; background-color: #f9f9f9; border: 1px solid #eee;">
+    Checking Rogue Scholar for citation information...
+  </div>
+  
+  <script>
+  (function() {
+    const pageTitle = {{ page.title | jsonify }};
+    const blogSlug = "{{ site.rogue_scholar_slug | default: 'chrismarcum' }}";
+    const author = "{{ site.author }}";
+    const blogTitle = "{{ site.title }}";
+    const date = "{{ page.date | date: '%B %d, %Y' }}";
+    const statusDiv = document.getElementById('doi-status');
+    const fallbackMsg = "No DOI has been issued by Rogue Scholar yet. Please check back later.";
     
-      const hit = (data.hits && data.hits.hits && data.hits.hits.length > 0) ? data.hits.hits[0] : null;
-
-      if (hit && hit.pids && hit.pids.doi && hit.pids.doi.identifier) {
-        const doi = hit.pids.doi.identifier;
-        const doiUrl = `https://doi.org/${doi}`;
-        const author = "{{ site.author }}"; 
-        const blogTitle = "{{ site.title }}"; 
-        const date = "{{ page.date | date: '%B %d, %Y' }}";
-
-        placeholder.innerHTML = `
-          <strong>Recommended Citation:</strong><br>
-          ${author} (${date}). "${hit.metadata.title}." <em>${blogTitle}</em>. 
-          <a href="${doiUrl}" target="_blank" style="color: #0066cc; text-decoration: underline;">${doiUrl}</a>
-        `;
-      } else {
-        placeholder.innerHTML = "<em>No DOI has been issued by Rogue Scholar yet. Please check back later.</em>";
-      }
-    })
-    .catch(error => {
-      placeholder.innerHTML = "<em> EM No DOI has been issued by Rogue Scholar yet. Please check back later.</em>";
-    });
-})();
-</script>
+    const apiUrl = `https://rogue-scholar.org/api/communities/${blogSlug}/records?q=metadata.title:"${encodeURIComponent(pageTitle)}"`;
+  
+    fetch(apiUrl)
+      .then(response => {
+        if (!response.ok) return Promise.reject();
+        return response.json();
+      })
+      .then(data => {
+        const record = (data.hits && data.hits.hits && data.hits.hits.length > 0) ? data.hits.hits[0] : null;
+  
+        if (record && record.pids && record.pids.doi) {
+          const doi = record.pids.doi.identifier;
+          const doiUrl = `https://doi.org/${doi}`;
+  
+          statusDiv.innerHTML = `
+            <strong>Recommended Citation:</strong><br>
+            ${author} (${date}). "${record.metadata.title}." <em>${blogTitle}</em>. 
+            <a href="${doiUrl}" target="_blank" style="color: #0066cc;">${doiUrl}</a>
+          `;
+        } else {
+          statusDiv.innerHTML = fallbackMsg;
+        }
+      })
+      .catch(() => {
+        statusDiv.innerHTML = fallbackMsg;
+      });
+  })();
+  </script>
 </article>
