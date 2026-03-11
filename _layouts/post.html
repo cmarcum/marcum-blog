@@ -30,62 +30,53 @@ layout: default
   {% endfor %}
   </p>
   <hr>
-  <hr>
-  <p id="rs-citation-text"><small><em>Checking Rogue Scholar for a DOI&hellip;</em></small></p>
-  <script>
-  (function () {
-    var el    = document.getElementById('rs-citation-text');
-    var title = {{ page.title | jsonify }};
+ <hr>
+<div id="doi-status" style="font-size: 0.9em; color: #555; margin-top: 20px; padding: 15px; border-radius: 5px; background-color: #f9f9f9; border: 1px solid #eee;">
+  Checking Rogue Scholar for citation information...
+</div>
 
-    function fmtDate(iso) {
-      var months = ['January','February','March','April','May','June',
-                    'July','August','September','October','November','December'];
-      var d = new Date((iso || "{{ page.date | date: '%Y-%m-%d' }}") + 'T00:00:00');
-      return isNaN(d) ? iso : d.getFullYear() + ', ' + months[d.getMonth()] + ' ' + d.getDate();
-    }
+<script>
+(function() {
+  // Pull variables from Jekyll
+  // Note: jsonify adds surrounding quotes, so we don't add them manually in the query string
+  const pageTitle = {{ page.title | jsonify }};
+  const blogSlug = "{{ site.rogue_scholar_slug | default: 'chrismarcum' }}";
+  const author = "{{ site.author }}"; // Christopher Steven Marcum
+  const blogTitle = "{{ site.title }}"; // Open Evidence
+  const date = "{{ page.date | date: '%B %d, %Y' }}";
+  const statusDiv = document.getElementById('doi-status');
+  const fallbackMsg = "BB No DOI has been issued by Rogue Scholar yet. Please check back later.";
 
-    function fmtAuthors(creators) {
-      if (!creators || !creators.length) return {{ site.author | default: "Christopher Steven Marcum" | jsonify }};
-      var names = creators.map(function (c) {
-        var p = c.person_or_org;
-        if (!p) return '';
-        if (p.family_name) {
-          var initials = p.given_name
-            ? p.given_name.trim().split(/\s+/).map(function (n) { return n[0].toUpperCase() + '.'; }).join(' ')
-            : '';
-          return p.family_name + (initials ? ', ' + initials : '');
-        }
-        return p.name || '';
-      }).filter(Boolean);
-      if (!names.length) return {{ site.author | default: "Christopher Steven Marcum" | jsonify }};
-      if (names.length === 1) return names[0];
-      return names.slice(0, -1).join(', ') + ', & ' + names[names.length - 1];
-    }
+  // Build the URL using the slug from _config.yml
+  // We remove manual quotes because pageTitle (via jsonify) already includes them
+  const apiUrl = `https://rogue-scholar.org/api/communities/${blogSlug}/records?q=metadata.title:${encodeURIComponent(pageTitle)}&size=1`;
 
-    var apiUrl = 'https://rogue-scholar.org/api/communities/chrismarcum/records?size=1&q='
-                 + encodeURIComponent(title);
+  fetch(apiUrl)
+    .then(response => {
+      if (!response.ok) return Promise.reject();
+      return response.json();
+    })
+    .then(data => {
+      // InvenioRDM (Rogue Scholar) stores hits in data.hits.hits
+      const record = (data.hits && data.hits.hits && data.hits.hits.length > 0) ? data.hits.hits[0] : null;
 
-    fetch(apiUrl, { headers: { Accept: 'application/json' } })
-      .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
-      .then(function (data) {
-        var hit = data.hits && data.hits.total > 0 && data.hits.hits[0];
-        var doi = hit && hit.pids && hit.pids.doi && hit.pids.doi.identifier;
-        if (!doi) {
-          el.innerHTML = '<small>No DOI has been issued by Rogue Scholar yet. Please check back later.</small>';
-          return;
-        }
-        var authors = fmtAuthors(hit.metadata && hit.metadata.creators);
-        var date    = fmtDate(hit.metadata && hit.metadata.publication_date);
-        var blog    = {{ site.title | default: "Open Evidence" | jsonify }};
-        var doiUrl  = 'https://doi.org/' + doi;
-        el.innerHTML = '<small><strong>Suggested citation:</strong> '
-          + authors + ' (' + date + '). ' + title
-          + '. <em>' + blog + '</em>. '
-          + '<a href="' + doiUrl + '">' + doiUrl + '</a></small>';
-      })
-      .catch(function () {
-        el.innerHTML = '<small>No DOI has been issued by Rogue Scholar yet. Please check back later.</small>';
-      });
-  })();
-  </script>
+      if (record && record.pids && record.pids.doi) {
+        const doi = record.pids.doi.identifier;
+        const doiUrl = `https://doi.org/${doi}`;
+
+        statusDiv.innerHTML = `
+          <strong>Recommended Citation:</strong><br>
+          ${author} (${date}). "${record.metadata.title}." <em>${blogTitle}</em>. 
+          <a href="${doiUrl}" target="_blank" style="color: #0066cc; text-decoration: underline;">${doiUrl}</a>
+        `;
+      } else {
+        statusDiv.innerHTML = fallbackMsg;
+      }
+    })
+    .catch(() => {
+      // All errors (CORS, 404, network) result in the fallback message without console logs
+      statusDiv.innerHTML = fallbackMsg;
+    });
+})();
+</script>
 </article>
