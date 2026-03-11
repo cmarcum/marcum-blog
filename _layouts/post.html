@@ -29,4 +29,47 @@ layout: default
     </span>
   {% endfor %}
   </p>
+  <hr>
+<div id="rogue-scholar-citation" style="font-size: 0.9em; color: #555; margin-top: 20px; padding: 10px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9;">
+  Loading citation and DOI information...
+</div>
+
+<script>
+  (function() {
+    // Construct the canonical URL of the current post
+    const postUrl = "{{ site.url }}{{ site.baseurl }}{{ page.url }}";
+    const placeholder = document.getElementById('rogue-scholar-citation');
+    
+    // Rogue Scholar API endpoint for searching posts by URL
+    const apiEndpoint = `https://rogue-scholar.org/api/posts?query=${encodeURIComponent(postUrl)}`;
+  
+    fetch(apiEndpoint)
+      .then(response => response.json())
+      .then(data => {
+        // Rogue Scholar returns an array of posts in data.data
+        const post = data.data && data.data.length > 0 ? data.data[0] : null;
+  
+        if (post && post.attributes && post.attributes.doi) {
+          const doi = post.attributes.doi;
+          const doiUrl = `https://doi.org/${doi}`;
+          const author = "{{ site.author }}";
+          const title = "{{ page.title }}";
+          const blogTitle = "{{ site.title }}";
+          const date = "{{ page.date | date: '%B %d, %Y' }}";
+  
+          placeholder.innerHTML = `
+            <strong>Recommended Citation:</strong><br>
+            ${author} (${date}). "${title}." <em>${blogTitle}</em>. 
+            <a href="${doiUrl}" target="_blank">${doiUrl}</a>
+          `;
+        } else {
+          placeholder.innerHTML = "<em>No DOI has been issued by Rogue Scholar yet. Please check back later.</em>";
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching Rogue Scholar data:', error);
+        placeholder.innerHTML = "<em>No DOI has been issued by Rogue Scholar yet. Please check back later.</em>";
+      });
+  })();
+  </script>
 </article>
