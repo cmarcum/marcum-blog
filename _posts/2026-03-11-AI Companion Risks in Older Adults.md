@@ -24,5 +24,9 @@ Yet current AI companion deployment in elder care often exploits exactly this co
 
 Some researchers [have made recommendations](https://doi.org/10.3389/frobt.2024.136371) on the design of AI companions using real-world evidence from focus groups of older adults. Their work suggests that older adults themselves want additional protections against deceptive design, privacy leakage, and whole-hog substitution for human-centered social support. The path forward demands evidence-based regulation that centers on the wellbeing and autonomy of vulnerable populations, rigorous safety standards enforced through independent oversight, and sustained commitment to human caregiving as the irreplaceable foundation of elder care. Continued regulatory inaction pushes aside these issues and risks replicating with vulnerable elders the same failures that have already harmed children.
 
-![Me with Paro at the 2019 Annual Meeting of the Gerontological Society of America, of which I am a Fellow.](https://github.com/user-attachments/assets/390fc593-4f89-416e-8ad5-3fc49059efca)
+<figure>
+<img height="600" alt="Me with Paro at the 2019 Annual Meeting of the Gerontological Society of America, of which I am a Fellow." src="https://github.com/user-attachments/assets/390fc593-4f89-416e-8ad5-3fc49059efca" />
+ 
+ <figcaption>Figure: Me with Paro at the 2019 Annual Meeting of the Gerontological Society of America, of which I am a Fellow.</figcaption>
+</figure>
 
