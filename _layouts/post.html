@@ -34,10 +34,9 @@ layout: default
   <p id="rs-citation-text"><small><em>Checking Rogue Scholar for a DOI&hellip;</em></small></p>
   <script>
   (function () {
-    var el  = document.getElementById('rs-citation-text');
-    var url = "{{ site.url }}{{ site.baseurl }}{{ page.url }}";
+    var el    = document.getElementById('rs-citation-text');
+    var title = {{ page.title | jsonify }};
 
-    /* Helpers */
     function fmtDate(iso) {
       var months = ['January','February','March','April','May','June',
                     'July','August','September','October','November','December'];
@@ -63,38 +62,30 @@ layout: default
       return names.slice(0, -1).join(', ') + ', & ' + names[names.length - 1];
     }
 
-    var queries = [
-      'metadata.related_identifiers.identifier:"' + url + '"',
-      '"' + url + '"'
-    ];
-    var attempt = 0;
+    var apiUrl = 'https://rogue-scholar.org/api/communities/chrismarcum/records?size=1&q='
+                 + encodeURIComponent('metadata.title:"' + title + '"');
 
-    function search() {
-      if (attempt >= queries.length) {
+    fetch(apiUrl, { headers: { Accept: 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+      .then(function (data) {
+        var hit = data.hits && data.hits.total > 0 && data.hits.hits[0];
+        var doi = hit && hit.pids && hit.pids.doi && hit.pids.doi.identifier;
+        if (!doi) {
+          el.innerHTML = '<small>No DOI has been issued by Rogue Scholar yet. Please check back later.</small>';
+          return;
+        }
+        var authors = fmtAuthors(hit.metadata && hit.metadata.creators);
+        var date    = fmtDate(hit.metadata && hit.metadata.publication_date);
+        var blog    = {{ site.title | default: "Open Evidence" | jsonify }};
+        var doiUrl  = 'https://doi.org/' + doi;
+        el.innerHTML = '<small><strong>Suggested citation:</strong> '
+          + authors + ' (' + date + '). ' + title
+          + '. <em>' + blog + '</em>. '
+          + '<a href="' + doiUrl + '">' + doiUrl + '</a></small>';
+      })
+      .catch(function () {
         el.innerHTML = '<small>No DOI has been issued by Rogue Scholar yet. Please check back later.</small>';
-        return;
-      }
-      var apiUrl = 'https://rogue-scholar.org/api/communities/chrismarcum/records?size=1&q='
-                   + encodeURIComponent(queries[attempt++]);
-      fetch(apiUrl, { headers: { Accept: 'application/json' } })
-        .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
-        .then(function (data) {
-          var hit = data.hits && data.hits.total > 0 && data.hits.hits[0];
-          var doi = hit && hit.pids && hit.pids.doi && hit.pids.doi.identifier;
-          if (!doi) { search(); return; }
-          var authors = fmtAuthors(hit.metadata && hit.metadata.creators);
-          var date    = fmtDate(hit.metadata && hit.metadata.publication_date);
-          var title   = (hit.metadata && hit.metadata.title) || {{ page.title | jsonify }};
-          var blog    = {{ site.title | default: "Open Evidence" | jsonify }};
-          var doiUrl  = 'https://doi.org/' + doi;
-          el.innerHTML = '<small><strong>Suggested citation:</strong> '
-            + authors + ' (' + date + '). ' + title
-            + '. <em>' + blog + '</em>. '
-            + '<a href="' + doiUrl + '">' + doiUrl + '</a></small>';
-        })
-        .catch(search);
-    }
-    search();
+      });
   })();
   </script>
 </article>
