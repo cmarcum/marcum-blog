@@ -31,46 +31,70 @@ layout: default
   </p>
   <hr>
   <hr>
-  <div id="doi-status" style="font-size: 0.9em; color: #555; margin-top: 20px; padding: 15px; border-radius: 5px; background-color: #f9f9f9; border: 1px solid #eee;">
-    Checking Rogue Scholar for citation information...
-  </div>
-  
+  <p id="rs-citation-text"><small><em>Checking Rogue Scholar for a DOI&hellip;</em></small></p>
   <script>
-  (function() {
-    const pageTitle = {{ page.title }};
-    const blogSlug = "{{ site.rogue_scholar_slug | default: 'chrismarcum' }}";
-    const author = "{{ site.author }}";
-    const blogTitle = "{{ site.title }}";
-    const date = "{{ page.date | date: '%B %d, %Y' }}";
-    const statusDiv = document.getElementById('doi-status');
-    const fallbackMsg = "No DOI has been issued by Rogue Scholar yet. Please check back later.";
-    
-    const apiUrl = `https://rogue-scholar.org/api/communities/${blogSlug}/records?q=metadata.title:"${pageTitle}"`;
-  
-    fetch(apiUrl)
-      .then(response => {
-        if (!response.ok) return Promise.reject();
-        return response.json();
-      })
-      .then(data => {
-        const record = (data.hits && data.hits.hits && data.hits.hits.length > 0) ? data.hits.hits[0] : null;
-  
-        if (record && record.pids && record.pids.doi) {
-          const doi = record.pids.doi.identifier;
-          const doiUrl = `https://doi.org/${doi}`;
-  
-          statusDiv.innerHTML = `
-            <strong>Recommended Citation:</strong><br>
-            ${author} (${date}). "${record.metadata.title}." <em>${blogTitle}</em>. 
-            <a href="${doiUrl}" target="_blank" style="color: #0066cc;">${doiUrl}</a>
-          `;
-        } else {
-          statusDiv.innerHTML = fallbackMsg;
+  (function () {
+    var el  = document.getElementById('rs-citation-text');
+    var url = "{{ site.url }}{{ site.baseurl }}{{ page.url }}";
+
+    /* Helpers */
+    function fmtDate(iso) {
+      var months = ['January','February','March','April','May','June',
+                    'July','August','September','October','November','December'];
+      var d = new Date((iso || "{{ page.date | date: '%Y-%m-%d' }}") + 'T00:00:00');
+      return isNaN(d) ? iso : d.getFullYear() + ', ' + months[d.getMonth()] + ' ' + d.getDate();
+    }
+
+    function fmtAuthors(creators) {
+      if (!creators || !creators.length) return {{ site.author | default: "Christopher Steven Marcum" | jsonify }};
+      var names = creators.map(function (c) {
+        var p = c.person_or_org;
+        if (!p) return '';
+        if (p.family_name) {
+          var initials = p.given_name
+            ? p.given_name.trim().split(/\s+/).map(function (n) { return n[0].toUpperCase() + '.'; }).join(' ')
+            : '';
+          return p.family_name + (initials ? ', ' + initials : '');
         }
-      })
-      .catch(() => {
-        statusDiv.innerHTML = fallbackMsg;
-      });
+        return p.name || '';
+      }).filter(Boolean);
+      if (!names.length) return {{ site.author | default: "Christopher Steven Marcum" | jsonify }};
+      if (names.length === 1) return names[0];
+      return names.slice(0, -1).join(', ') + ', & ' + names[names.length - 1];
+    }
+
+    var queries = [
+      'metadata.related_identifiers.identifier:"' + url + '"',
+      '"' + url + '"'
+    ];
+    var attempt = 0;
+
+    function search() {
+      if (attempt >= queries.length) {
+        el.innerHTML = '<small>No DOI has been issued by Rogue Scholar yet. Please check back later.</small>';
+        return;
+      }
+      var apiUrl = 'https://rogue-scholar.org/api/communities/chrismarcum/records?size=1&q='
+                   + encodeURIComponent(queries[attempt++]);
+      fetch(apiUrl, { headers: { Accept: 'application/json' } })
+        .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+        .then(function (data) {
+          var hit = data.hits && data.hits.total > 0 && data.hits.hits[0];
+          var doi = hit && hit.pids && hit.pids.doi && hit.pids.doi.identifier;
+          if (!doi) { search(); return; }
+          var authors = fmtAuthors(hit.metadata && hit.metadata.creators);
+          var date    = fmtDate(hit.metadata && hit.metadata.publication_date);
+          var title   = (hit.metadata && hit.metadata.title) || {{ page.title | jsonify }};
+          var blog    = {{ site.title | default: "Open Evidence" | jsonify }};
+          var doiUrl  = 'https://doi.org/' + doi;
+          el.innerHTML = '<small><strong>Suggested citation:</strong> '
+            + authors + ' (' + date + '). ' + title
+            + '. <em>' + blog + '</em>. '
+            + '<a href="' + doiUrl + '">' + doiUrl + '</a></small>';
+        })
+        .catch(search);
+    }
+    search();
   })();
   </script>
 </article>
