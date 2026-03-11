@@ -33,56 +33,46 @@ layout: default
 <hr>
 <hr>
 
-<hr>
-<div id="doi-citation-box" style="font-size: 0.9em; color: #555; margin-top: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9; line-height: 1.5;">
-  Checking for DOI...
+<div id="rogue-scholar-citation" style="font-size: 0.9em; color: #555; margin-top: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9; line-height: 1.5;">
+  Checking Rogue Scholar for DOI...
 </div>
 
 <script>
 (function() {
-  const box = document.getElementById('doi-citation-box');
-  const manualDoi = "{{ page.doi }}";
   const pageTitle = {{ page.title | jsonify }};
-  const author = "{{ site.author }}"; 
-  const blogTitle = "{{ site.title }}"; 
-  const date = "{{ page.date | date: '%B %d, %Y' }}";
+  const blogSlug = "chrismarcum"; 
+  const placeholder = document.getElementById('rogue-scholar-citation');
+  const query = `parent.communities.ids:${blogSlug} AND metadata.title:"${pageTitle.replace(/"/g, '\\"')}"`;
+  const apiUrl = `https://rogue-scholar.org/api/records?q=${encodeURIComponent(query)}&size=1`;
 
-  function displayCitation(doi, title) {
-    const doiUrl = `https://doi.org/${doi}`;
-    box.innerHTML = `
-      <strong>Recommended Citation:</strong><br>
-      ${author} (${date}). "${title}." <em>${blogTitle}</em>. 
-      <a href="${doiUrl}" target="_blank" style="color: #0066cc; text-decoration: underline;">${doiUrl}</a>
-    `;
-  }
+  fetch(apiUrl)
+    .then(response => {
+      if (!response.ok) throw new Error('API fetch failed');
+      return response.json();
+    })
+    .then(data => {
+    
+      const hit = (data.hits && data.hits.hits && data.hits.hits.length > 0) ? data.hits.hits[0] : null;
 
-  function displayFallback() {
-    box.innerHTML = "<em>No DOI has been issued by Rogue Scholar yet. Please check back later.</em>";
-  }
+      if (hit && hit.pids && hit.pids.doi && hit.pids.doi.identifier) {
+        const doi = hit.pids.doi.identifier;
+        const doiUrl = `https://doi.org/${doi}`;
+        const author = "{{ site.author }}"; 
+        const blogTitle = "{{ site.title }}"; 
+        const date = "{{ page.date | date: '%B %d, %Y' }}";
 
-  if (manualDoi && manualDoi !== "") {
-    displayCitation(manualDoi, pageTitle);
-  } else {
- 
-    const crossrefUrl = `https://api.crossref.org/works?query.title=${encodeURIComponent(pageTitle)}&filter=prefix:10.59350&rows=1`;
-
-    fetch(crossrefUrl)
-      .then(response => response.json())
-      .then(data => {
-        if (data.message && data.message.items && data.message.items.length > 0) {
-          const item = data.message.items[0];
-      
-          if (item.title[0].toLowerCase().includes(pageTitle.toLowerCase().substring(0, 10))) {
-            displayCitation(item.DOI, item.title[0]);
-          } else {
-            displayFallback();
-          }
-        } else {
-          displayFallback();
-        }
-      })
-      .catch(() => displayFallback());
-  }
+        placeholder.innerHTML = `
+          <strong>Recommended Citation:</strong><br>
+          ${author} (${date}). "${hit.metadata.title}." <em>${blogTitle}</em>. 
+          <a href="${doiUrl}" target="_blank" style="color: #0066cc; text-decoration: underline;">${doiUrl}</a>
+        `;
+      } else {
+        placeholder.innerHTML = "<em>No DOI has been issued by Rogue Scholar yet. Please check back later.</em>";
+      }
+    })
+    .catch(error => {
+      placeholder.innerHTML = "<em> EM No DOI has been issued by Rogue Scholar yet. Please check back later.</em>";
+    });
 })();
 </script>
 </article>
