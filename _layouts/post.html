@@ -63,7 +63,7 @@ layout: default
     }
 
     var apiUrl = 'https://rogue-scholar.org/api/communities/chrismarcum/records?size=1&q='
-                 + encodeURIComponent('metadata.title:"' + title + '"');
+                 + encodeURIComponent(title);
 
     fetch(apiUrl, { headers: { Accept: 'application/json' } })
       .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
