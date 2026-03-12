@@ -31,61 +31,49 @@ layout: default
   </p>
   <hr>
  <hr>
-<p id="rs-citation-text"><small><em>Checking Rogue Scholar for a DOI&hellip;</em></small></p>
+  <div id="rogue-scholar-footer" style="font-size: 0.9em; color: #555; margin-top: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9; line-height: 1.6;">
+    Checking for DOI and citation information...
+  </div>
+  
   <script>
-  (function () {
-    var el    = document.getElementById('rs-citation-text');
-    var title = {{ page.title | jsonify }};
-
-    function fmtDate(iso) {
-      var months = ['January','February','March','April','May','June',
-                    'July','August','September','October','November','December'];
-      var d = new Date((iso || "{{ page.date | date: '%Y-%m-%d' }}") + 'T00:00:00');
-      return isNaN(d) ? iso : d.getFullYear() + ', ' + months[d.getMonth()] + ' ' + d.getDate();
-    }
-
-    function fmtAuthors(creators) {
-      if (!creators || !creators.length) return {{ site.author | default: "Christopher Steven Marcum" | jsonify }};
-      var names = creators.map(function (c) {
-        var p = c.person_or_org;
-        if (!p) return '';
-        if (p.family_name) {
-          var initials = p.given_name
-            ? p.given_name.trim().split(/\s+/).map(function (n) { return n[0].toUpperCase() + '.'; }).join(' ')
-            : '';
-          return p.family_name + (initials ? ', ' + initials : '');
-        }
-        return p.name || '';
-      }).filter(Boolean);
-      if (!names.length) return {{ site.author | default: "Christopher Steven Marcum" | jsonify }};
-      if (names.length === 1) return names[0];
-      return names.slice(0, -1).join(', ') + ', & ' + names[names.length - 1];
-    }
-
-    var apiUrl = 'https://rogue-scholar.org/api/communities/chrismarcum/records?size=1&q='
-                 + encodeURIComponent(title);
-
-    fetch(apiUrl, { headers: { Accept: 'application/json' } })
-      .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
-      .then(function (data) {
-        var hit = data.hits && data.hits.total > 0 && data.hits.hits[0];
-        var doi = hit && hit.pids && hit.pids.doi && hit.pids.doi.identifier;
-        if (!doi) {
-          el.innerHTML = '<small>No DOI has been issued by Rogue Scholar yet. Please check back later.</small>';
-          return;
-        }
-        var authors = fmtAuthors(hit.metadata && hit.metadata.creators);
-        var date    = fmtDate(hit.metadata && hit.metadata.publication_date);
-        var blog    = {{ site.title | default: "Open Evidence" | jsonify }};
-        var doiUrl  = 'https://doi.org/' + doi;
-        el.innerHTML = '<small><strong>Suggested citation:</strong> '
-          + authors + ' (' + date + '). ' + title
-          + '. <em>' + blog + '</em>. '
-          + '<a href="' + doiUrl + '">' + doiUrl + '</a></small>';
-      })
-      .catch(function () {
-        el.innerHTML = '<small>  </small>';
-      });
-  })();
+    (function() {
+      const pageTitle = {{ page.title | jsonify }};
+      const blogSlug = "{{'chrismarcum'}}";
+      const author = "{{ site.author }}";
+      const blogTitle = "{{ site.title }}";
+      const date = "{{ page.date | date: '%B %d, %Y' }}";
+      const footer = document.getElementById('rogue-scholar-footer');
+      const fallback = "No DOI has been issued by Rogue Scholar yet. Please check back later for a recommended citation.";
+    
+      // Using the specific community endpoint and query format you provided
+      const apiUrl = `https://rogue-scholar.org/api/communities/${blogSlug}/records?size=1&q=encodeURIComponent(${pageTitle})`;
+    
+      fetch(apiUrl)
+        .then(response => {
+          if (!response.ok) return Promise.reject();
+          return response.json();
+        })
+        .then(data => {
+          // Navigating the InvenioRDM structure: hits -> hits[0] -> pids -> doi -> identifier
+          const record = (data.hits && data.hits.hits && data.hits.hits.length > 0) ? data.hits.hits[0] : null;
+    
+          if (record && record.pids && record.pids.doi && record.pids.doi.identifier) {
+            const doi = record.pids.doi.identifier;
+            const doiUrl = `https://doi.org/${doi}`;
+            
+            footer.innerHTML = `
+              <strong>Recommended Citation:</strong><br>
+              ${author} (${date}). "${record.metadata.title}." <em>${blogTitle}</em>. 
+              <a href="${doiUrl}" target="_blank" style="color: #0066cc; text-decoration: underline;">${doiUrl}</a>
+            `;
+          } else {
+            footer.innerHTML = fallback;
+          }
+        })
+        .catch(() => {
+          // Silent catch to prevent errors in the console
+          footer.innerHTML = fallback;
+        });
+    })();
   </script>
 </article>
