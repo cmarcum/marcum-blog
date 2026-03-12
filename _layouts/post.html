@@ -44,8 +44,6 @@ layout: default
       const date = "{{ page.date | date: '%B %d, %Y' }}";
       const footer = document.getElementById('rogue-scholar-footer');
       const fallback = "No DOI has been issued by Rogue Scholar yet. Please check back later for a recommended citation.";
-    
-      // Using the specific community endpoint and query format you provided
       const apiUrl = `https://rogue-scholar.org/api/communities/${blogSlug}/records?size=1&q=encodeURIComponent(${pageTitle})`;
     
       fetch(apiUrl)
@@ -71,7 +69,6 @@ layout: default
           }
         })
         .catch(() => {
-          // Silent catch to prevent errors in the console
           footer.innerHTML = fallback;
         });
     })();
