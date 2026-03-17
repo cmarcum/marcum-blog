@@ -39,89 +39,38 @@ layout: default
   var el = document.getElementById('rogue-scholar-footer');
   if (!el) return;
 
-  // Use the Jekyll-rendered title and date, not document.title (which includes the blog name)
   var postTitle  = {{ page.title | jsonify }};
-  var postYear   = "{{ page.date | date: '%Y' }}";
-  var postAuthor = "{{ site.author | default: page.author }}";
-  var blogName   = "{{ site.title }}";
+  var postAuthor = "{{ site.author }}";
+  var blogTitle  = "{{ site.title }}";
+  var date       = "{{ page.date | date: '%B %d, %Y' }}";
+  var fallback   = "No DOI has been issued by Rogue Scholar yet. Please check back later for a recommended citation.";
 
-  // Prefer searching by the canonical page URL — it's unambiguous
-  var pageUrl = window.location.href.split('?')[0].split('#')[0];
+  var apiUrl = 'https://rogue-scholar.org/api/communities/chrismarcum/records?size=1&q=' + encodeURIComponent(postTitle);
 
-  function renderCitation(record) {
-    // InvenioRDM stores the DOI in one of these places depending on version
-    var doi =
-      (record.pids && record.pids.doi && record.pids.doi.identifier) ||
-      record.doi ||
-      (record.metadata && record.metadata.doi) ||
-      null;
-
-    if (!doi) {
-      el.innerHTML = '<em>Post indexed by Rogue Scholar but DOI not yet available.</em>';
-      return;
-    }
-
-    var doiUrl = 'https://doi.org/' + doi;
-    el.innerHTML =
-      '<strong>Suggested citation:</strong> ' +
-      postAuthor + ' (' + postYear + '). ' +
-      postTitle + '. <em>' + blogName + '</em>. ' +
-      '<a href="' + doiUrl + '">' + doiUrl + '</a>';
-  }
-
-  function fallback() {
-    el.innerHTML =
-      '<em>This post has not yet been indexed by ' +
-      '<a href="https://rogue-scholar.org">Rogue Scholar</a>. ' +
-      'Check back later for a citable DOI.</em>';
-  }
-
-  // Try URL-based search first, then fall back to title search
-  function searchByUrl() {
-    var apiUrl =
-      'https://rogue-scholar.org/api/communities/chrismarcum/records' +
-      '?size=1&q=url%3A%22' + encodeURIComponent(pageUrl) + '%22';
-
-    return fetch(apiUrl)
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
-        var hits = data && data.hits && data.hits.hits;
-        if (hits && hits.length > 0) {
-          renderCitation(hits[0]);
-          return true;
-        }
-        return false;
-      });
-  }
-
-  function searchByTitle() {
-    var apiUrl =
-      'https://rogue-scholar.org/api/communities/chrismarcum/records' +
-      '?size=1&q=' + encodeURIComponent(postTitle);
-
-    return fetch(apiUrl)
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
-        var hits = data && data.hits && data.hits.hits;
-        if (hits && hits.length > 0) {
-          renderCitation(hits[0]);
-          return true;
-        }
-        return false;
-      });
-  }
-
-  searchByUrl()
-    .then(function (found) {
-      if (!found) return searchByTitle();
-      return true;
+  fetch(apiUrl)
+    .then(function (r) {
+      if (!r.ok) return Promise.reject(new Error('HTTP ' + r.status));
+      return r.json();
     })
-    .then(function (found) {
-      if (!found) fallback();
+    .then(function (data) {
+      console.log('[Rogue Scholar]', data); // remove once confirmed working
+      var hits = data && data.hits && data.hits.hits;
+      var record = (hits && hits.length > 0) ? hits[0] : null;
+
+      if (record && record.pids && record.pids.doi && record.pids.doi.identifier) {
+        var doi    = record.pids.doi.identifier;
+        var doiUrl = 'https://doi.org/' + doi;
+        el.innerHTML =
+          '<strong>Recommended Citation:</strong><br>' +
+          postAuthor + ' (' + date + '). "' + record.metadata.title + '." <em>' + blogTitle + '</em>. ' +
+          '<a href="' + doiUrl + '" target="_blank" style="color:#0066cc; text-decoration:underline;">' + doiUrl + '</a>';
+      } else {
+        el.innerHTML = fallback;
+      }
     })
     .catch(function (err) {
-      console.warn('Rogue Scholar citation lookup failed:', err);
-      fallback();
+      console.error('[Rogue Scholar] lookup failed:', err);
+      el.innerHTML = fallback;
     });
 })();
 </script>
