@@ -44,16 +44,17 @@ layout: default
     const footer = document.getElementById('rogue-scholar-footer');
     const fallback = "No DOI has been issued by Rogue Scholar yet. Please check back later for a recommended citation.";
     
-    // Properly encode the title so fetch() can process the spaces
-    const encodedTitle = encodeURIComponent(pageTitle); 
+    // Wrap in quotes for an exact phrase match in InvenioRDM's search
+    const encodedTitle = encodeURIComponent(`"${pageTitle}"`);
     const apiUrl = `https://rogue-scholar.org/api/communities/${blogSlug}/records?size=1&q=${encodedTitle}`;
   
     fetch(apiUrl)
       .then(response => {
-        if (!response.ok) return Promise.reject();
+        if (!response.ok) return Promise.reject(new Error(`HTTP ${response.status}`));
         return response.json();
       })
       .then(data => {
+        console.log('[Rogue Scholar]', apiUrl, data); // remove after confirming it works
         const record = (data.hits && data.hits.hits && data.hits.hits.length > 0) ? data.hits.hits[0] : null;
   
         if (record && record.pids && record.pids.doi && record.pids.doi.identifier) {
@@ -69,8 +70,8 @@ layout: default
           footer.innerHTML = fallback;
         }
       })
-      .catch(() => {
-        // Silently catch any network or parsing errors and show the fallback UI
+      .catch(err => {
+        console.error('[Rogue Scholar] lookup failed:', err);
         footer.innerHTML = fallback;
       });
   })();
