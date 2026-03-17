@@ -35,45 +35,94 @@ layout: default
     Checking for DOI and citation information...
   </div>
   <script>
-  (function() {
-    const pageTitle = {{ page.title | jsonify }};
-    const blogSlug = "chrismarcum";
-    const author = "{{ site.author }}";
-    const blogTitle = "{{ site.title }}";
-    const date = "{{ page.date | date: '%B %d, %Y' }}";
-    const footer = document.getElementById('rogue-scholar-footer');
-    const fallback = "No DOI has been issued by Rogue Scholar yet. Please check back later for a recommended citation.";
-    
-    // Wrap in quotes for an exact phrase match in InvenioRDM's search
-    const encodedTitle = encodeURIComponent(`"${pageTitle}"`);
-    const apiUrl = `https://rogue-scholar.org/api/communities/${blogSlug}/records?size=1&q=${encodedTitle}`;
-  
-    fetch(apiUrl)
-      .then(response => {
-        if (!response.ok) return Promise.reject(new Error(`HTTP ${response.status}`));
-        return response.json();
-      })
-      .then(data => {
-        console.log('[Rogue Scholar]', apiUrl, data); // remove after confirming it works
-        const record = (data.hits && data.hits.hits && data.hits.hits.length > 0) ? data.hits.hits[0] : null;
-  
-        if (record && record.pids && record.pids.doi && record.pids.doi.identifier) {
-          const doi = record.pids.doi.identifier;
-          const doiUrl = `https://doi.org/${doi}`;
-          
-          footer.innerHTML = `
-            <strong>Recommended Citation:</strong><br>
-            ${author} (${date}). "${record.metadata.title}." <em>${blogTitle}</em>. 
-            <a href="${doiUrl}" target="_blank" style="color: #0066cc; text-decoration: underline;">${doiUrl}</a>
-          `;
-        } else {
-          footer.innerHTML = fallback;
+(function () {
+  var el = document.getElementById('citation-block');
+  if (!el) return;
+
+  // Use the Jekyll-rendered title and date, not document.title (which includes the blog name)
+  var postTitle  = {{ page.title | jsonify }};
+  var postYear   = "{{ page.date | date: '%Y' }}";
+  var postAuthor = "{{ site.author | default: page.author }}";
+  var blogName   = "{{ site.title }}";
+
+  // Prefer searching by the canonical page URL — it's unambiguous
+  var pageUrl = window.location.href.split('?')[0].split('#')[0];
+
+  function renderCitation(record) {
+    // InvenioRDM stores the DOI in one of these places depending on version
+    var doi =
+      (record.pids && record.pids.doi && record.pids.doi.identifier) ||
+      record.doi ||
+      (record.metadata && record.metadata.doi) ||
+      null;
+
+    if (!doi) {
+      el.innerHTML = '<em>Post indexed by Rogue Scholar but DOI not yet available.</em>';
+      return;
+    }
+
+    var doiUrl = 'https://doi.org/' + doi;
+    el.innerHTML =
+      '<strong>Suggested citation:</strong> ' +
+      postAuthor + ' (' + postYear + '). ' +
+      postTitle + '. <em>' + blogName + '</em>. ' +
+      '<a href="' + doiUrl + '">' + doiUrl + '</a>';
+  }
+
+  function fallback() {
+    el.innerHTML =
+      '<em>This post has not yet been indexed by ' +
+      '<a href="https://rogue-scholar.org">Rogue Scholar</a>. ' +
+      'Check back later for a citable DOI.</em>';
+  }
+
+  // Try URL-based search first, then fall back to title search
+  function searchByUrl() {
+    var apiUrl =
+      'https://rogue-scholar.org/api/communities/chrismarcum/records' +
+      '?size=1&q=url%3A%22' + encodeURIComponent(pageUrl) + '%22';
+
+    return fetch(apiUrl)
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var hits = data && data.hits && data.hits.hits;
+        if (hits && hits.length > 0) {
+          renderCitation(hits[0]);
+          return true;
         }
-      })
-      .catch(err => {
-        console.error('[Rogue Scholar] lookup failed:', err);
-        footer.innerHTML = fallback;
+        return false;
       });
-  })();
+  }
+
+  function searchByTitle() {
+    var apiUrl =
+      'https://rogue-scholar.org/api/communities/chrismarcum/records' +
+      '?size=1&q=' + encodeURIComponent(postTitle);
+
+    return fetch(apiUrl)
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var hits = data && data.hits && data.hits.hits;
+        if (hits && hits.length > 0) {
+          renderCitation(hits[0]);
+          return true;
+        }
+        return false;
+      });
+  }
+
+  searchByUrl()
+    .then(function (found) {
+      if (!found) return searchByTitle();
+      return true;
+    })
+    .then(function (found) {
+      if (!found) fallback();
+    })
+    .catch(function (err) {
+      console.warn('Rogue Scholar citation lookup failed:', err);
+      fallback();
+    });
+})();
 </script>
 </article>
