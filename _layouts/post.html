@@ -31,8 +31,9 @@ layout: default
   </p>
   <hr>
  <hr>
-  {% assign slug = page.path | split: '/' | last | remove: '.md' | remove: '.markdown' %}
-{% assign slug = slug | replace_first: page.date | date: '%Y-%m-%d-', '' %}
+{% assign post_filename = page.path | split: '/' | last %}
+{% assign date_prefix = page.date | date: '%Y-%m-%d-' %}
+{% assign slug = post_filename | remove: '.md' | remove: '.markdown' | remove: date_prefix %}
 {% assign doi_record = site.data.dois[slug] %}
 
 <div style="font-size: 0.9em; color: #555; margin-top: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9; line-height: 1.6;">
