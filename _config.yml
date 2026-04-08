@@ -3,6 +3,8 @@ author: "Christopher Steven Marcum"
 description: "Perspectives on science, data, and technology that don't fit anywhere else."
 url: "https://www.chrismarcum.com" 
 baseurl: "/marcum-blog"
+orcid: "0000-0002-0899-6143"
+id: "https://orcid.org/0000-0002-0899-6143"
 license:
   name: Creative Commons Attribution 4.0 International (CC BY 4.0)
   url: https://creativecommons.org/licenses/by/4.0/
