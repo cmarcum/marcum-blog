@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Birds are Totally Real"
-date: 2026-04-05
+date: 2026-04-06
 tags: [general, open science]
 ---
 
