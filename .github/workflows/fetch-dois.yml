@@ -18,7 +18,7 @@ jobs:
       - name: Fetch DOIs from Rogue Scholar
         run: |
           python3 << 'EOF'
-          import os, re, urllib.request, urllib.parse, json, time
+          import os, re, urllib.request, urllib.parse, json, time, difflib
 
           posts_dir = '_posts'
           data_dir  = '_data'
@@ -52,7 +52,8 @@ jobs:
                   continue
               title = m.group(1).strip()
 
-              q   = urllib.parse.quote(title)
+              # FIX 1: Add literal double-quotes around the title for an exact phrase search
+              q   = urllib.parse.quote(f'"{title}"')
               url = f'https://rogue-scholar.org/api/communities/chrismarcum/records?size=1&q={q}'
               print(f'  {slug}: querying for "{title}"')
 
@@ -61,13 +62,22 @@ jobs:
                   with urllib.request.urlopen(req, timeout=10) as r:
                       data = json.load(r)
                   hits = data.get('hits', {}).get('hits', [])
+                  
                   if hits:
                       rec = hits[0]
-                      doi = (rec.get('pids', {}).get('doi', {}).get('identifier')
-                             or rec.get('doi'))
                       rs_title = rec.get('metadata', {}).get('title', title)
-                      results[slug] = {'doi': doi, 'title': rs_title}
-                      print(f'    -> DOI: {doi}')
+                      
+                      # FIX 2: Validate that the returned title actually matches our post
+                      similarity = difflib.SequenceMatcher(None, title.lower(), rs_title.lower()).ratio()
+                      
+                      if similarity > 0.5: # Requires titles to be at least 50% similar
+                          doi = (rec.get('pids', {}).get('doi', {}).get('identifier')
+                                 or rec.get('doi'))
+                          results[slug] = {'doi': doi, 'title': rs_title}
+                          print(f'    -> DOI: {doi}')
+                      else:
+                          results[slug] = {'doi': None, 'title': title}
+                          print(f'    -> not yet indexed (API returned mismatch: "{rs_title}")')
                   else:
                       results[slug] = {'doi': None, 'title': title}
                       print(f'    -> not yet indexed')
