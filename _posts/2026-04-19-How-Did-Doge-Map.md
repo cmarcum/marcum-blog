@@ -2,7 +2,7 @@
 layout: post
 title: "How Did DOGE Cuts Hit Your State?"
 date: 2026-04-19
-tags: [general, open science]
+tags: [general, open data, government]
 ---
 
 My friend [Abigail Haddad](https://www.linkedin.com/in/abigail-haddad/) has been doing amazing things with open government data. Her website is a [treasure trove of data science workflows](https://abigailhaddad.netlify.app/) that give insights into the federal administrative state on topics as diverse as public comment analysis in rulemaking and the status of federal job openings.
