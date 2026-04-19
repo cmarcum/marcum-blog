@@ -2,8 +2,14 @@
 layout: post
 title: "How Did DOGE Cuts Hit Your State?"
 date: 2026-04-19
+last_modified_at: 2026-01-18 11:35:00 
+updates:
+  - date: 2026-04-19
+    content: "Added a new map that normalizes by total spending in that state."
 tags: [general, open data, government]
 ---
+
+> Updated at 11:38 AM ET to include another map based on feedback from the interwebs.
 
 My friend [Abigail Haddad](https://www.linkedin.com/in/abigail-haddad/) has been doing amazing things with open government data. Her website is a [treasure trove of data science workflows](https://abigailhaddad.netlify.app/) that give insights into the federal administrative state on topics as diverse as public comment analysis in rulemaking and the status of federal job openings.
 
@@ -16,6 +22,18 @@ Abigail's work provides a richer perspective on the contract cancellations than 
 <div class="map-container" style="margin: 20px 0;">
   <iframe 
     src="{{ '/assets/leaflets/2025spending.html' | relative_url }}" 
+    width="100%" 
+    height="600px" 
+    style="border: none; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" 
+    title="Choropleth of Federal Contract Cancellations, 2025-2026">
+  </iframe>
+</div>
+
+Update: some folks wanted this figure normalized by something reasonable. Here, I use the most recent state profile data from [usaspending.gov](https://www.usaspending.gov/state) to normalize by the total amount of spending in each state in the last year (as of the date of publication):
+
+<div class="map-container" style="margin: 20px 0;">
+  <iframe 
+    src="{{ '/assets/leaflets/2025spending2.html' | relative_url }}" 
     width="100%" 
     height="600px" 
     style="border: none; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" 
