@@ -16,4 +16,6 @@ plugins:
 
 feed:
   path: /feed.atom
-  
+  author:
+    name: "Christopher Steven Marcum"
+    uri: "https://orcid.org/0000-0002-0899-6143"
