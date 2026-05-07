@@ -2,10 +2,14 @@
 layout: post
 title: "Well, it's about time I started a new blog."
 date: 2026-01-13
-last_modified_at: 2026-01-18
+last_modified_at: 2026-05-07
 updates:
   - date: 2026-01-18
     content: "Updated the feed to use atom instead of rss at the suggestion of Martin Fenner and implemented updates."
+  - date: 2026-02-27
+    content: "Added a workflow to fetch DOI from Rogue Scholar with graceful failure/fallback."
+  - date: 2026-05-07
+    content: "Added ORCID id to atom feed URI and reformatted recommended citations and copyright to hyperlink to my orcid record."
 tags: [general]
 ---
 

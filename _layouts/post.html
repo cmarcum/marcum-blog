@@ -39,7 +39,7 @@ layout: default
 <div style="font-size: 0.9em; color: #555; margin-top: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9; line-height: 1.6;">
   {% if doi_record.doi and doi_record.doi != '' %}
     <strong>Recommended Citation:</strong><br>
-    {{ site.author }} ({{ page.date | date: '%B %d, %Y' }}). "{{ doi_record.title }}." <em>{{ site.title }}</em>.
+    <a href="{{ site.author.uri | default: site.id }}" target="_blank" style="color: #555; text-decoration: none;">{{ site.author.name | default: site.author }}</a> ({{ page.date | date: '%B %d, %Y' }}). "{{ doi_record.title }}." <em>{{ site.title }}</em>.
     <a href="https://doi.org/{{ doi_record.doi }}" target="_blank" style="color:#0066cc; text-decoration:underline;">https://doi.org/{{ doi_record.doi }}</a>
   {% else %}
     No DOI has been issued by Rogue Scholar yet. Please check back later for a recommended citation.
