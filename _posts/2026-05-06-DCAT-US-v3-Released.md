@@ -2,6 +2,10 @@
 layout: post
 title: "DCAT-US 3.0 has been Released for Federal Data"
 date: 2026-05-06
+last_modified_at: 2026-05-07
+updates:
+  - date: 2026-05-07
+    content: "Fixed the formatting of the embedded markdown table."
 tags: [open science, open data, government data]
 ---
 
@@ -25,6 +29,7 @@ DCAT US v3.0 introduces requirement levels for every field. Each element is labe
 Here's a brief summary of the changes. I strongly recommend reading the very nicely written detailed description of the revision on [resources.data.gov](https://resources.data.gov/resources/dcat-us3/), as well as reviewing the GSA's [GitHub repository for the standard](https://github.com/GSA/dcat-us).
 
 Table of Selected Changes from v1.1 to v3.0
+
 | Element | v1.1 Behavior | v3.0 Behavior |
 |--------|----------------|----------------|
 | `modified` | Allowed intervals or ambiguous formats | Must be a single ISO 8601 date |
