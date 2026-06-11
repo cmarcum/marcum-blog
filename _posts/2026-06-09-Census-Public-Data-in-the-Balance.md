@@ -5,15 +5,11 @@ date: 2026-06-11
 tags: [government data, open data, information policy]
 ---
 
-
 ---
 
 This post was written in collaboration with Meghan Maury and Beth Jarosz. A shorter, less technical, and more accessible version of this post was published by [dataindex.us](https://dataindex.us/newsletter/article/5ed3272e-9a35-4f38-881b-c62ad45d6a56) earlier today.
 
 ---
-
-
-# Public Data Hangs in the Balance with a New Department of Commerce Policy  
 
 Late last week, The Department of Commerce quietly issued a sweeping policy change that has implications for literally every American. Secretary Lutnik [banned the US Census Bureau (Census) and the Bureau of Economic Analysis (BEA)](https://www.commerce.gov/opog/disclosure-avoidance-statistical-products) from certain statistical techniques that inject noise into data, especially one called ‘differential privacy’, which typically aim to protect the privacy and confidentiality of Americans and their businesses.  
 
