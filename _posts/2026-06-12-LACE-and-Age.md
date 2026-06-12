@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "A Really `Cool` New Data Set from Census"
-date: 2026-05-12
+date: 2026-06-12
 tags: [general, open data, government]
 ---
 
