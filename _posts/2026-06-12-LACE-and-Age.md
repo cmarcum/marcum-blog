@@ -20,6 +20,6 @@ The map below visualizes these metrics by representing the percentage of occupie
     width="100%" 
     height="600px" 
     style="border: none; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" 
-    title="Choropleth / Heatmap of County-Level Percent of Households with Air Conditioning">
+    title="Choropleth / Heatmap of County-Level Percent of Households without Air Conditioning">
   </iframe>
 </div>
