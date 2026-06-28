@@ -2,11 +2,13 @@
 layout: post
 title: "A Review of the Standard Application Process"
 date: 2026-06-27
+updates:
+  - date: 2026-06-28
+    content: "Three changes: fixed several typos. removed names for posterity. added a section on legacy social media. added note on dois."
 tags: [statistics, government data]
 --- 
 
 <img width="975" height="148" alt="image" src="https://github.com/user-attachments/assets/d68ec8b6-3b9c-402a-b1bc-210a62278d57" />
-
 
 Recently, the National Center for Science and Engineering Statistics (NCSES), which is the statistical agency at the National Science Foundation, released a new version of the [Standard Application Process (SAP) portal](http://sap.nsf.org). The SAP is intended to be the central gateway for the nation’s research community to access federal confidential statistical data assets. Required by the Foundations for Evidence-Based Policymaking Act of 2018 (specifically Title III, the Confidential Information Protection and Statistical Efficiency Act or CIPSEA), the SAP is supposed to serve as both a data catalog and a unified gateway for submitting data access applications to statistical agencies. 
 
@@ -24,7 +26,7 @@ So, how did the SAP relaunch do in achieving these features in their revision? M
 
 ## A Dot Gov Address
 
-They got this right. From a policy perspective, the transition from the legacy .org domain (researchdatagov.org) to the official sap.nsf.gov is a win. When the SAP was on my desk at OMB, I probably complained the most about this aspect to Karin Orvis (then the non-political US Chief Statistician who has been replaced by a political appointee) and John Finamore, Chief Statistician at NCSES. Not having a dot gov address is confusing to the public and is against federal policy. I'm glad they finally fixed this.
+They got this right. From a policy perspective, the transition from the legacy dot org domain (researchdatagov.org) to the official sap.nsf.gov is a win. When the SAP was on my desk at OMB, I probably complained the most about this aspect to both the US Chief Statistician (who has now been replaced by a political appointee) and NCSES. Not having a dot gov address is confusing to the public and is against federal policy. I'm glad they finally fixed this.
 
 ## Browsing the Whole Catalog
 
@@ -69,8 +71,9 @@ The new SAP, unlike the old version, makes the first three items very easy to se
 
 <img width="975" height="294" alt="image" src="https://github.com/user-attachments/assets/e499b609-26a5-4124-87de-4b5cccc1ad2c" />
 
-
 Having abstracts publicly disclosed as expected would significantly improve the transparency of the system and how it’s being used. NCSES should fix this discrepancy by adding abstracts to the SAP immediately. 
+
+Another, longer term, improvement would be to mint DOIs for each data assets' landing page. Some already include DOIs in the metadata, like DOI that resolves to an ICPSR landing page for the Annual Survey of Jails in Indian Country, 2024 at: [https://www.doi.org/10.3886/icpsr39407](https://www.doi.org/10.3886/icpsr39407).
 
 # New Weirdnesses
 
@@ -91,12 +94,21 @@ Census Bureau ➡️ Decennial Surname Identifiers) all 401s.
 
 <img width="975" height="284" alt="image" src="https://github.com/user-attachments/assets/86a94c41-63e9-4e27-bee4-bee004ef03c3" />
 
-
 In the application portal itself there is a massive inconsistency in the flow. The step-guide is non-linear, which could be confusing to many users. Adding a dataset to an application is really confusing. Users either have to add a dataset to their basket by browsing for it first, then they have to navigate to their basket, then they have to either start a new application or add it to an existing one. That users cannot simply add datasets directly to their existing applications *from within the application itself* is an annoying UX design flaw. 
 
 ## Missing Help Information
 
 The Help page provides useful information about navigating the SAP. It however, does not help users know where to turn when they cannot resolve an issue on their own. For that, you have to navigate to the Contact page. Also, the “learning resources” are all PDFs, which is not the most accessible format for modern browsing. NCSES should add language to the help page referencing the contact page and add web-accessible versions of all the learning resources. 
+
+## Legacy Social Media Links
+
+On some of the dataset description pages, there are buttons to share the dataset card from the SAP on social media. I think it's great to be able leverage users to promote interest in specific datasets. However, the buttons icons are missing (there are square bracket placeholders) and one of them points to legacy microblogging platform Twitter. It's unclear whether having the social media sharing buttons is intentional or not. 
+
+<img width="382" height="226" alt="image" src="https://github.com/user-attachments/assets/a79ef28d-5703-4bcc-aa6e-48866ba9f6d9" />
+
+<img width="661" height="653" alt="image" src="https://github.com/user-attachments/assets/26a1d117-8bc5-4d95-b967-53c5ee13a03b" />
+
+
 
 # Conclusion
 
