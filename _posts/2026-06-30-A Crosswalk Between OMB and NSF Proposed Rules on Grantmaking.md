@@ -2,6 +2,9 @@
 layout: post
 title: "A Crosswalk Between OMB and NSF Proposed Rules on Grantmaking"
 date: 2026-06-30
+updates:
+  - date: 2026-06-30
+    content: "Fixed typo to state GFA invokes the FPL."
 tags: [general, government]
 ---
 
@@ -64,7 +67,7 @@ Other publishing proposals would scrap reimbursements or pay peer reviewers, unp
  - [NIH Publisher Fee Cap Plan ‘Not Comprehensive Enough,’ Critics Say](https://www.insidehighered.com/news/government/science-research-policy/2025/08/27/nih-publisher-fee-cap-plan-not-comprehensive)
  - [In Scientific Publishing, Who Should Foot the Bill?](https://undark.org/2026/01/07/apc-science-publishing/)
 
-The GFA does not invoke the Federal Purpose License, which remains unchanged at § 2 CFR 200.315(b) in the OMB proposal:
+The GFA invokes the Federal Purpose License, which remains unchanged at § 2 CFR 200.315(b) in the OMB proposal:
 
 > To the extent permitted by law, the recipient or sub-recipient may copyright any work that is subject to copyright and was developed, or for which ownership was acquired, under a Federal award. The Federal agency reserves a royalty-free, nonexclusive, and irrevocable right to reproduce, publish, or otherwise use the work for Federal purposes and to authorize others to do so. This includes the right to require recipients and sub-recipients to make such works available through agency-designated public access repositories.
 
