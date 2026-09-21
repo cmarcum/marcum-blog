@@ -47,6 +47,9 @@ The-World-Factbook-Was-A-Valuable-Data-Resource:
 a-new-look-at-datagov:
   doi: 10.59350/6461m-xxe70
   title: "There's a New Look at Data.gov."
+introducing reginfo-tools:
+  doi: 
+  title: "reginfo-tools: A Pseudo-API Command Line Interface for Accessing Regulatory Documents and Information Collection Requests"
 its-about-time:
   doi: 10.59350/ayn08-ts813
   title: "Well, it's about time I started a new blog."
