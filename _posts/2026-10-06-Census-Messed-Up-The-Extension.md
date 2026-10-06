@@ -2,7 +2,18 @@
 layout: post
 title: "Census Extended the Comment Period - Now it needs to fix the docket."
 date: 2026-10-06
+last_modified_at: 2026-10-06
+updates:
+  - date: 2026-10-06
+    content: "They fixed it!"
 tags: [general]
+---
+
+---
+> UPDATE as of 3PM ET today: They fixed it! The original docket has been updated with the extended deadline, and the new docket was removed. There were a few comments submitted to the new docket that were not published so I hope those get added to the original docket manually. 
+
+<img width="986" height="587" alt="image" src="https://github.com/user-attachments/assets/f41c12a7-36bb-4143-ab39-cf580154a74e" />
+
 ---
 
 Recently, US Census Bureau responded to community calls to extend the 30-day public comment period on its Notice of Proposed Rulemaking that would upend more than 200 years of precedent on how the decennial census to about 50-days. That’s great to have an extension (even if it is not the full 90 days that the community requested). However, Census botched the administrative process on the extension. Now, there are two dockets, four places people can comment, and one of the [regulations.gov](regulations.gov) dockets isn’t even a docket. I’ve asked the official responsible for this rulemaking and comment process to fix it.
