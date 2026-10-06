@@ -1,6 +1,6 @@
 ---
 layout: post
-title: ""
+title: "Census Extended the Comment Period - Now it needs to fix the docket."
 date: 2026-10-06
 tags: [general]
 ---
