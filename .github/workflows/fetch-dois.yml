@@ -41,6 +41,47 @@ jobs:
           title_re = re.compile(r'^title\s*:\s*["\']?(.+?)["\']?\s*$', re.MULTILINE)
           results  = dict(existing)
 
+          def resolve(slug, title):
+              # FIX 1: Add literal double-quotes around the title for an exact phrase search
+              q   = urllib.parse.quote(f'"{title}"')
+              url = f'https://rogue-scholar.org/api/communities/chrismarcum/records?size=1&q={q}'
+              print(f'  {slug}: querying for "{title}"')
+
+              try:
+                  req  = urllib.request.Request(url, headers={'User-Agent': 'jekyll-doi-fetcher/1.0'})
+                  with urllib.request.urlopen(req, timeout=10) as r:
+                      data = json.load(r)
+                  hits = data.get('hits', {}).get('hits', [])
+
+                  if hits:
+                      rec = hits[0]
+                      rs_title = rec.get('metadata', {}).get('title', title)
+
+                      # FIX 2: Validate that the returned title actually matches our post
+                      similarity = difflib.SequenceMatcher(None, title.lower(), rs_title.lower()).ratio()
+
+                      if similarity > 0.5: # Requires titles to be at least 50% similar
+                          doi = (rec.get('pids', {}).get('doi', {}).get('identifier')
+                                 or rec.get('doi'))
+                          print(f'    -> DOI: {doi}')
+                          return {'doi': doi, 'title': rs_title}
+                      else:
+                          print(f'    -> not yet indexed (API returned mismatch: "{rs_title}")')
+                          return {'doi': None, 'title': title}
+                  else:
+                      print(f'    -> not yet indexed')
+                      return {'doi': None, 'title': title}
+              except Exception as e:
+                  print(f'    -> error: {e}')
+                  return None
+
+          # Posts that are new to dois.yml in this run -- i.e. just published.
+          # Rogue Scholar can take a few minutes to index a freshly deployed
+          # post and mint its DOI, so if any of these come back unresolved,
+          # wait and retry once before giving up for this run (the daily
+          # schedule will keep retrying after that).
+          newly_seen = []
+
           for fname in sorted(os.listdir(posts_dir)):
               if not (fname.endswith('.md') or fname.endswith('.markdown')):
                   continue
@@ -58,38 +99,23 @@ jobs:
                   continue
               title = m.group(1).strip()
 
-              # FIX 1: Add literal double-quotes around the title for an exact phrase search
-              q   = urllib.parse.quote(f'"{title}"')
-              url = f'https://rogue-scholar.org/api/communities/chrismarcum/records?size=1&q={q}'
-              print(f'  {slug}: querying for "{title}"')
-
-              try:
-                  req  = urllib.request.Request(url, headers={'User-Agent': 'jekyll-doi-fetcher/1.0'})
-                  with urllib.request.urlopen(req, timeout=10) as r:
-                      data = json.load(r)
-                  hits = data.get('hits', {}).get('hits', [])
-                  
-                  if hits:
-                      rec = hits[0]
-                      rs_title = rec.get('metadata', {}).get('title', title)
-                      
-                      # FIX 2: Validate that the returned title actually matches our post
-                      similarity = difflib.SequenceMatcher(None, title.lower(), rs_title.lower()).ratio()
-                      
-                      if similarity > 0.5: # Requires titles to be at least 50% similar
-                          doi = (rec.get('pids', {}).get('doi', {}).get('identifier')
-                                 or rec.get('doi'))
-                          results[slug] = {'doi': doi, 'title': rs_title}
-                          print(f'    -> DOI: {doi}')
-                      else:
-                          results[slug] = {'doi': None, 'title': title}
-                          print(f'    -> not yet indexed (API returned mismatch: "{rs_title}")')
-                  else:
-                      results[slug] = {'doi': None, 'title': title}
-                      print(f'    -> not yet indexed')
-              except Exception as e:
-                  print(f'    -> error: {e}')
+              is_new = slug not in results
+              rec = resolve(slug, title)
+              if rec is not None:
+                  results[slug] = rec
+                  if is_new and not rec['doi']:
+                      newly_seen.append((slug, title))
               time.sleep(0.5)  # be polite to the API
+
+          if newly_seen:
+              print(f'\n{len(newly_seen)} newly published post(s) have no DOI yet; '
+                    f'waiting 5 minutes for Rogue Scholar to index before retrying...')
+              time.sleep(5 * 60)
+              for slug, title in newly_seen:
+                  rec = resolve(slug, title)
+                  if rec is not None:
+                      results[slug] = rec
+                  time.sleep(0.5)
 
           out = {
               slug: {'doi': rec['doi'] or None, 'title': rec['title']}
