@@ -35,6 +35,7 @@ layout: default
 {% assign date_prefix = page.date | date: '%Y-%m-%d-' %}
 {% assign slug = post_filename | remove: '.md' | remove: '.markdown' | remove: date_prefix %}
 {% assign doi_record = site.data.dois[slug] %}
+{% assign toot_record = site.data.toots[slug] %}
 
 <div style="font-size: 0.9em; color: #555; margin-top: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9; line-height: 1.6;">
   {% if doi_record.doi and doi_record.doi != '' %}
@@ -45,4 +46,8 @@ layout: default
     No DOI has been issued by Rogue Scholar yet. Please check back later for a recommended citation.
   {% endif %}
 </div>
+
+{% if toot_record.id %}
+  {% include fedi_comments.html %}
+{% endif %}
 </article>

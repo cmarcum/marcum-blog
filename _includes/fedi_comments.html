@@ -1,0 +1,73 @@
+<!-- adapted from https://codeberg.org/gedankenstuecke/pages-source (_includes/fedi_comments.html), MIT-style lineage -->
+<section class="page__comments">
+  <h4 id="comment_title" class="page__comments-title">Comments</h4>
+  <p>
+  You can use your <a href="https://joinmastodon.org">Mastodon</a> or other <em>ActivityPub</em>-based <em>Fediverse</em> account to comment on this post by <a href="https://{{ toot_record.host }}/@{{ toot_record.username }}/{{ toot_record.id }}">leaving a publicly visible reply to the announcement post</a>.
+  </p>
+  <p><small>Content warnings are supported. You can delete your comment at any time by deleting your post on the Fediverse.</small></p>
+  <p id="fedicomments-list">
+    <button id="fedicomments-load" type="button">Load comments from Fediverse</button>
+  </p>
+  <noscript><p>You have to allow JavaScript to view the comments.</p></noscript>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.4.16/purify.min.js"></script>
+  <script type="text/javascript">
+  function escapeHtml (unsafe) {
+    return unsafe
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+  }
+
+  const loadComment = document.getElementById('fedicomments-load')
+  const fediCommentsList = document.getElementById('fedicomments-list')
+  const fediId = "{{ toot_record.id }}"
+
+  loadComment.addEventListener('click', function () {
+    loadComment.innerHTML = 'Loading'
+    fetch('https://{{ toot_record.host }}/api/v1/statuses/{{ toot_record.id }}/context')
+      .then(function (response) { return response.json() })
+      .then(function (data) {
+        if (data.descendants && Array.isArray(data.descendants) && data.descendants.length > 0) {
+          fediCommentsList.innerHTML = ''
+          data.descendants.forEach(function (reply) {
+            reply.account.display_name = escapeHtml(reply.account.display_name)
+            reply.account.emojis.forEach(emoji => {
+              reply.account.display_name = reply.account.display_name.replace(`:${emoji.shortcode}:`,
+                  `<img src="${escapeHtml(emoji.static_url)}" alt="Emoji ${emoji.shortcode}" height="20" width="20" />`)
+            })
+            let fediCommentContent
+            if (reply.spoiler_text === '') {
+              fediCommentContent = reply.content
+            } else {
+              fediCommentContent =
+                    `<details><summary>⚠️ CW <em>(click to open)</em>: ${escapeHtml(reply.spoiler_text)}</summary>
+                      ${reply.content}
+                   </details>`
+            }
+            const commentClass = (reply.in_reply_to_id !== fediId) ? 'author comment reply' : 'author comment'
+            const mastodonComment =
+                  `<article id="comment-${reply.id}" class="${commentClass}">
+                     <div class="author__left">
+                       <img class="author__picture" src="${escapeHtml(reply.account.avatar_static)}" alt="Avatar of ${reply.account.display_name}">
+                     </div>
+                     <div class="author__right">
+                      <h4 class="author__name">
+                        <a rel="external nofollow" href="${reply.uri}">
+                          ${reply.account.display_name} @ ${reply.created_at.substr(0, 10)}
+                        </a>
+                      </h4>
+                      <div class="author__bio">${fediCommentContent}</div>
+                     </div>
+                  </article>`
+            fediCommentsList.appendChild(DOMPurify.sanitize(mastodonComment, { RETURN_DOM_FRAGMENT: true }))
+          })
+        } else {
+          fediCommentsList.innerHTML = '<p>No comments found 😕</p>'
+        }
+      })
+      .then(() => { loadComment.innerHTML = 'Reload comments' })
+  })
+  </script>
+</section>
