@@ -4,7 +4,7 @@ title: "GSA Closed the Comment Count Loophole on Regulations.gov"
 date: 2026-10-23
 co_authors:
   - name: "Abigail Haddad"
-  - url: "https://presentofcoding.substack.com/"
+    url: "https://presentofcoding.substack.com/"
 tags: [general]
 ---
 
