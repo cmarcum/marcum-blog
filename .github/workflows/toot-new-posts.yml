@@ -86,5 +86,10 @@ jobs:
           git add _data/toots.yml
           if ! git diff --staged --quiet; then
             git commit -m "chore: record new Mastodon toots [skip ci]"
-            git push origin HEAD:${{ github.event.workflow_run.head_branch }}
+            branch="${{ github.event.workflow_run.head_branch }}"
+            for i in 1 2 3 4 5; do
+              git push origin HEAD:"$branch" && break
+              git fetch origin "$branch"
+              git rebase "origin/$branch"
+            done
           fi
