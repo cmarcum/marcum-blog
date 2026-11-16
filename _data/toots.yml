@@ -43,6 +43,10 @@ My-Comment-On-Census-USBC-2026-6028:
   skipped: true
 The Comment Count is Too Damn High:
   skipped: true
+The-Census-Rule-Will-Likely-Move-Forward:
+  host: sciences.social
+  id: '117623666593585648'
+  username: csmarcum
 The-World-Factbook-Was-A-Valuable-Data-Resource:
   skipped: true
 We-Need-a-New-Metadata-Schema-for-Open-Research:
